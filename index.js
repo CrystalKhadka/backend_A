@@ -2,9 +2,18 @@
 const express = require("express");
 const connectDatabase = require("./database/database");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 // Creating an express app
 const app = express();
+
+//  cors configuration
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 // Express Json Config
 app.use(express.json());
@@ -28,7 +37,6 @@ app.get("/test", (req, res) => {
 app.use("/api/user", require("./routes/userRoutes"));
 
 // http://localhost:5000/api/user
-
 // http://localhost:5000/test
 
 // Starting the server (always at the last)
