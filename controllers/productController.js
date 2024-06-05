@@ -1,5 +1,5 @@
-const path = require("path");
-const productModel = require("../models/productModel");
+const path = require('path');
+const productModel = require('../models/productModel');
 
 const createProduct = async (req, res) => {
   console.log(req.body);
@@ -18,7 +18,7 @@ const createProduct = async (req, res) => {
   ) {
     return res.status(400).json({
       success: false,
-      message: "Please enter all fields!",
+      message: 'Please enter all fields!',
     });
   }
 
@@ -26,7 +26,7 @@ const createProduct = async (req, res) => {
   if (!req.files || !req.files.productImage) {
     return res.status(400).json({
       success: false,
-      message: "Please upload an image!",
+      message: 'Please upload an image!',
     });
   }
 
@@ -52,7 +52,7 @@ const createProduct = async (req, res) => {
       productName: productName,
       productCategory: productCategory,
       productDescription: productDescription,
-      productPrice: productDescription,
+      productPrice: productPrice,
       productImage: imageName,
     });
 
@@ -60,19 +60,71 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Product created successfully",
+      message: 'Product created successfully',
       data: product,
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
-      error: "error",
+      message: 'Internal server error',
+      error: 'error',
     });
   }
 };
 
+// Fetch all products
+const getAllProducts = async (req, res) => {
+  try {
+    const allProducts = await productModel.find({});
+
+    res.status(201).json({
+      success: true,
+      message: 'All products fetched successfully',
+      products: allProducts,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
+// Get one product
+const getOneProduct = async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Product fetched successfully',
+      product: product,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  res.send('Update Product');
+};
+
 module.exports = {
   createProduct,
+  getAllProducts,
+  getOneProduct,
+  updateProduct,
 };

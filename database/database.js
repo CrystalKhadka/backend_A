@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 // External File
 // Functions (Connection to database)
 // Make a unique function name
 // Export
 
 const connectDatabase = () => {
-  mongoose.connect(process.env.MONGODB_CLOUD).then(() => {
-    console.log("Database connected!");
+  mongoose.connect(process.env.MONGODB_LOCAL).then(() => {
+    console.log('Database connected!');
   });
 };
 
