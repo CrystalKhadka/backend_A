@@ -1,5 +1,6 @@
 const path = require('path');
 const productModel = require('../models/productModel');
+const fs = require('fs');
 
 const createProduct = async (req, res) => {
   console.log(req.body);
@@ -119,7 +120,76 @@ const getOneProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  res.send('Update Product');
+  try {
+    // If there is image
+    if (req.files && req.files.productImage) {
+      // Destructuring the body
+      const { productImage } = req.files;
+
+      // Upload image to /public/image
+      // 1. Generate new image name
+      const imageName = `${Date.now()}-${productImage.name}`;
+
+      // 2. Make a upload path (/path/upload - directory)
+      const imageUploadPath = path.join(
+        __dirname,
+        `../public/products/${imageName}`
+      );
+
+      // 3, Move to that directory
+      await productImage.mv(imageUploadPath);
+
+      // req.params.id  (id), req.body (productName, productCategory, productDescription, productPrice)
+      req.body.productImage = imageName;
+
+      // if image is uploaded and req.body is updated
+      if (req.body.productImage) {
+        const existingProduct = await productModel.findById(req.params.id);
+        imagePath = path.join(
+          __dirname,
+          `../public/products/${existingProduct.productImage}`
+        );
+
+        // Delete the existing image
+        fs.unlinkSync(imagePath);
+      }
+      const updatedProduct = await productModel.findByIdAndUpdate(
+        req.params.id,
+        req.body
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Product updated successfully',
+        updatedProduct: updatedProduct,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    await productModel.findByIdAndDelete(req.params.id);
+
+    res.status(201).json({
+      success: true,
+      message: 'Product deleted successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
 };
 
 module.exports = {
@@ -127,4 +197,5 @@ module.exports = {
   getAllProducts,
   getOneProduct,
   updateProduct,
+  deleteProduct,
 };
