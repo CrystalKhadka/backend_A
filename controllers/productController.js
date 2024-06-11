@@ -45,7 +45,7 @@ const createProduct = async (req, res) => {
 
   // 3, Move to that directory (await, try catch)
   try {
-    await productImage.mv(imageUploadPath);
+      await productImage.mv(imageUploadPath);
 
     // save the product to database
 
@@ -121,6 +121,15 @@ const getOneProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
+    // No product
+    const product = await productModel.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
     // If there is image
     if (req.files && req.files.productImage) {
       // Destructuring the body
@@ -153,17 +162,17 @@ const updateProduct = async (req, res) => {
         // Delete the existing image
         fs.unlinkSync(imagePath);
       }
-      const updatedProduct = await productModel.findByIdAndUpdate(
-        req.params.id,
-        req.body
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'Product updated successfully',
-        updatedProduct: updatedProduct,
-      });
     }
+    const updatedProduct = await productModel.findByIdAndUpdate(
+      req.params.id,
+      req.body
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Product updated successfully',
+      updatedProduct: updatedProduct,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
