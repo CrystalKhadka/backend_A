@@ -1,6 +1,6 @@
-const userModel = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const userModel = require('../models/userModel');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {
   // 1. Check incoming data
@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
     // res.send("Please enter all fields");
     return res.json({
       success: false,
-      message: "Please enter all fields!",
+      message: 'Please enter all fields!',
     });
   }
 
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     if (existingUser) {
       return res.json({
         success: false,
-        message: "User Already Exists",
+        message: 'User Already Exists',
       });
     }
 
@@ -48,13 +48,13 @@ const createUser = async (req, res) => {
     // Send the response
     res.json({
       success: true,
-      message: "User Created Successfully",
+      message: 'User Created Successfully',
     });
   } catch (error) {
     console.log(error);
     res.json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
     });
   }
 };
@@ -70,7 +70,7 @@ const loginUser = async (req, res) => {
   if (!email || !password) {
     return res.json({
       success: false,
-      message: "Please enter all fields!",
+      message: 'Please enter all fields!',
     });
   }
   try {
@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
     if (!user) {
       return res.json({
         success: false,
-        message: "User not found",
+        message: 'User not found',
       });
     }
     // 4.2 if user found
@@ -92,30 +92,34 @@ const loginUser = async (req, res) => {
     if (!passwordCorrect) {
       return res.json({
         success: false,
-        message: "Invalid Password",
+        message: 'Invalid Password',
       });
     }
 
     // 5.2 if password is correct
     // Token (generate -user data and key)
-    const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = await jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET
+    );
     // Send the response (token, user data)
     res.json({
       success: true,
-      message: "User logged in successfully",
+      message: 'User logged in successfully',
       token: token,
       user: {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        isAdmin: user.isAdmin,
       },
     });
   } catch (error) {
     console.log(error);
     return res.json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
     });
   }
 };

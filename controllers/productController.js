@@ -45,7 +45,7 @@ const createProduct = async (req, res) => {
 
   // 3, Move to that directory (await, try catch)
   try {
-      await productImage.mv(imageUploadPath);
+    await productImage.mv(imageUploadPath);
 
     // save the product to database
 
