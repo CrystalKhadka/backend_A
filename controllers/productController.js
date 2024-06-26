@@ -201,10 +201,63 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProductsPagination = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 2;
+
+    const products = await productModel
+      .find({})
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    if (products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Products not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Products fetched successfully',
+      products: products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
+const getProductCount = async (req, res) => {
+  try {
+    const productCount = await productModel.countDocuments({});
+
+    res.status(200).json({
+      success: true,
+      message: 'Product count fetched successfully',
+      productCount: productCount,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
   getOneProduct,
   updateProduct,
   deleteProduct,
+  getProductsPagination,
+  getProductCount,
 };
