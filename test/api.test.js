@@ -27,6 +27,7 @@ describe('API Testing', () => {
       lastName: 'Doe',
       email: 'j@gmail.com',
       password: '123456',
+      phone:'9843041037'
     });
     if (response.body.success) {
       expect(response.body.message).toEqual('User Created Successfully');
